@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     food.cpp \
+    ghost.cpp \
     main.cpp \
     #mainwindow.cpp \
     player.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 HEADERS += \
     #mainwindow.h \
     food.h \
+    ghost.h \
     player.h \
 
 FORMS += \
