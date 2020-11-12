@@ -19,8 +19,6 @@ public:
     void createFood(int, int);
     void makeSuper();
     bool getIsSuper();
-    //int getRow();
-    //int getColumn();
 };
 
 #endif // FOOD_H

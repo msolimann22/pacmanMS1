@@ -11,18 +11,22 @@ class ghost:public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 private:
     QPixmap ghostImage;
-    //QTimer *timer;
+    QTimer *timer;
+    QEventLoop loop;
+    QList<QGraphicsItem*> items1;
     int row;
     int column;
-    int moveNum;
+    int initial_row;
+    int initual_column;
+    int id;
     int data[16][26];
-    int counter=0;
-
 public:
-    int pacman_row, pacman_column;
-    //ghost(int,int,int data[][26]);
-
     ghost();
+    int getInitialRow();
+    int getInitialColumn();
+    int getId();
+    void fear();
+    void removeFear();
     void createGhost(int, int, int, int data[][26]);
 public slots:
     void move();

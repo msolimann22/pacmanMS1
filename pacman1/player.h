@@ -24,8 +24,7 @@ private:
     int data[16][26];
     int score = 0;
     int lives = 3;
-    bool isSuper = false;
-//    QString score_text = "0";
+    bool super = false;
 public:
     player(int [][26]);
     void setRow(int);
@@ -35,6 +34,7 @@ public:
     void setLivesObj();
     void removeLive(int);
     void makeSuper();
+    bool isSuper();
     int getRow();
     int getColumn();
     int getScore();
@@ -42,6 +42,7 @@ public:
 
 public slots:
     void keyPressEvent(QKeyEvent *event);
+    void removeSuper();
 };
 
 #endif // PLAYER_H

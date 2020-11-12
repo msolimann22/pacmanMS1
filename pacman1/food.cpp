@@ -4,6 +4,7 @@ food::food(){
     foodImage.load("D:/QT/pacman1/Assets/Items/rare candy.png");
     foodImage = foodImage.scaledToWidth(23);
     foodImage = foodImage.scaledToHeight(23);
+
 }
 
 

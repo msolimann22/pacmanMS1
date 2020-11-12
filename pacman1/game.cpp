@@ -1,25 +1,7 @@
-#include "mainwindow.h"
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QApplication>
-#include <QFile>
-#include <QTextStream>
-#include <QGraphicsPixmapItem>
-#include "player.h"
-#include "food.h"
-#include "ghost.h"
-//#include <QBrush>
-int main(int argc, char *argv[])
-{
-    //Create the view and scene
-    QApplication a(argc, argv);
-    QGraphicsView view;
-    view.setFixedSize(1400,900);
-    view.setBackgroundBrush(QBrush(Qt::black));
-    QGraphicsScene game;
-    view.setScene(&game);
-    view.show();
+#include "game.h"
 
+game::game()
+{
     //Read board data from text file
     QFile board("D:/QT/pacman1/Text File Data/board.txt");
     board.open(QIODevice::ReadOnly);
@@ -51,7 +33,8 @@ int main(int argc, char *argv[])
                 boardImages[i][j].setPixmap(waterImage);
             }
             boardImages[i][j].setPos(50 * j + 50, 50 * i + 50);
-            game.addItem(&boardImages[i][j]);
+
+            scene()->addItem(&boardImages[i][j]);
         }
     }
 
@@ -60,7 +43,7 @@ int main(int argc, char *argv[])
 
     // Create the player obj
     player player1(boardData);
-    game.addItem(&player1);
+    scene()->addItem(&player1);
     player1.setFlag(QGraphicsPixmapItem::ItemIsFocusable);
     player1.setFocus();
 
@@ -89,14 +72,13 @@ int main(int argc, char *argv[])
              if(boardData2[i][j] == 33){
 
                Allfood[k].createFood(i,j);
-               game.addItem(&Allfood[k]);
+               scene()->addItem(&Allfood[k]);
                k++;
             }
-             // Initializing the super food
              else if(boardData2[i][j] == 44){
                  Allfood[k].createFood(i,j);
                  Allfood[k].makeSuper();
-                 game.addItem(&Allfood[k]);
+                 scene()->addItem(&Allfood[k]);
                  k++;
 
              }
@@ -104,8 +86,12 @@ int main(int argc, char *argv[])
 
     }
 
+    //Creating super food
+
+
+
     // Create Score Object
-    QGraphicsTextItem* score_label = game.addText(QString::number(player1.getScore()));
+    QGraphicsTextItem* score_label = scene()->addText(QString::number(player1.getScore()));
     score_label->setDefaultTextColor(QColor(Qt::white));
     score_label->setPos(100, 1);
     QFont serifFont("Times", 20, QFont::Bold);
@@ -117,13 +103,21 @@ int main(int argc, char *argv[])
     QPixmap livesImage("D:/QT/pacman1/Assets/Sprite1/sprite_front.png");
     livesImage.scaledToWidth(50);
     livesImage.scaledToHeight(50);
+//    for(int i = 0; i < player1.getLives(); i++){
+//        livesObj[i].setPixmap(livesImage);
+//        livesObj[i].setPos(400 + ((i + 1) * 20) , 1);
+//        scene.addItem(&livesObj[i]);
+//    }
     player1.setLivesObj();
+    //player1.removeLive(livesObj, 0);
+    //player1.createLives();
 
     // Create Ghosts
-    ghost* AllGhosts = new ghost[4]; //Creating multiple ghost objects
+
+    ghost* AllGhosts = new ghost[4]; //Creating multiple food objects
     QFile ghost_folder("D:/QT/pacman1/Text File Data/ghosts.txt");//<--
     ghost_folder.open(QIODevice::ReadOnly);                       //^
-    // Reading the ghost objects position on the map from a file ^^^^
+    // Reading the food objects position on the map from a file ^^^^
     int boardData3[16][26];
     QTextStream ghost_stream(&ghost_folder);
     for(int i = 0; i < 16; i++){
@@ -142,22 +136,26 @@ int main(int argc, char *argv[])
              if(boardData3[i][j] == 1){
 
                AllGhosts[l].createGhost(i,j, 1, boardData);
-               game.addItem(&AllGhosts[l]);
+               scene()->addItem(&AllGhosts[l]);
+               //AllGhosts[l].move();
                l++;
             }
              else if(boardData3[i][j] == 2){
                  AllGhosts[l].createGhost(i,j, 2, boardData);
-                 game.addItem(&AllGhosts[l]);
+                 scene()->addItem(&AllGhosts[l]);
+                 //AllGhosts[l].move();
                  l++;
              }
              else if(boardData3[i][j] == 3){
                  AllGhosts[l].createGhost(i,j, 3, boardData);
-                 game.addItem(&AllGhosts[l]);
+                 scene()->addItem(&AllGhosts[l]);
+                 //AllGhosts[l].move();
                  l++;
              }
              else if(boardData3[i][j] == 4){
                  AllGhosts[l].createGhost(i,j, 4, boardData);
-                 game.addItem(&AllGhosts[l]);
+                 scene()->addItem(&AllGhosts[l]);
+                 //AllGhosts[l].move();
                  l++;
              }
         }
@@ -165,5 +163,20 @@ int main(int argc, char *argv[])
     }
 
 
-    return a.exec();
+
+
+
+//    for(int i = 0; i < 3; i++){
+//        AllGhosts[i].move();
+//    }
+
+//    while(scene.isActive()){
+//        for(int i = 0; i < 3; i++){
+//            AllGhosts[i].pacman_row = player1.getRow();
+//            AllGhosts[i].pacman_column = player1.getColumn();
+
+//        }
+//    }
 }
+
+

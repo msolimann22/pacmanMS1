@@ -10,7 +10,6 @@ player::player(int data[][26])
     row = 7;
     column = 1;
     score = 0;
-    //scene()->addText(score_text);
     setPos(50 + 50 * column, 50 + 50 * row );
 
     for(int i = 0; i < 16; i++){
@@ -37,6 +36,8 @@ int player::getScore(){
     return score;
 }
 void player::keyPressEvent(QKeyEvent *event){
+    setFlag(QGraphicsPixmapItem::ItemIsFocusable);
+    setFocus();
     timer = new QTimer(this);
     QEventLoop loop;
     if(event->key() == Qt::Key_Up && data[row - 1][column] != -1){
@@ -45,8 +46,6 @@ void player::keyPressEvent(QKeyEvent *event){
         playerImage = playerImage.scaledToWidth(49);
         playerImage = playerImage.scaledToHeight(49);
         setPixmap(playerImage);
-        //QEventLoop loop;
-        //connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
 
     }
     if(event->key() == Qt::Key_Down && data[row + 1][column] != -1){
@@ -96,10 +95,9 @@ void player::keyPressEvent(QKeyEvent *event){
         if(typeid (*items[i]) == typeid (food)){
             scene()->removeItem(items[i]);
             food* food1 = dynamic_cast<food*>(items[i]);
-            //food* food1 = static_cast<food>(items[i]);
             if(food1->getIsSuper()){
                 score += 70;
-
+                makeSuper();
             }
             else
                 score += 30;
@@ -108,37 +106,71 @@ void player::keyPressEvent(QKeyEvent *event){
         }
         if(typeid (*items[i]) == typeid (ghost)){
             // Upon coliding with ghost
-            if(lives != 0){
-              removeLive(lives-1);
-              lives--;
-              row = 7;
-              column = 1;
-              setPos(50 + 50 * row, 50 + 50 * column );
+            ghost* ghost1 = dynamic_cast<ghost*>(items[i]);
+            if(super){
+                score += 300;
+                scene()->removeItem(ghost1);
+                ghost1->createGhost(ghost1->getInitialRow(), ghost1->getInitialColumn(), ghost1->getId(), data);
+                scene()->addItem(ghost1);
 
             }
-
-
+            else{
+                if(lives != 0){
+                  removeLive(lives-1);
+                  lives--;
+                  row = 7;
+                  column = 1;
+                  setPos(50 + 50 * row, 50 + 50 * column );
+                }
+            }
         }
     }
     try {
         connect(timer, SIGNAL(timeout()), &loop, SLOT(quit()));
         timer->start(100);
         loop.exec();
+        delete timer;
         keyPressEvent(event);
+
     } catch (std::exception& e) {
         score_label->setPlainText(e.what());
         score_label->update();
     }
-    delete timer;
+
 
 }
 void player::makeSuper(){
-    isSuper = true;
+    super = true;
+    QList<QGraphicsItem*> items = scene()->items();
+    for(int i = 0; i < items.size(); i++){
+        if(typeid (*items[i]) == typeid (ghost)){
+            ghost* ghost1 = dynamic_cast<ghost*>(items[i]);
+            ghost1->fear();
+        }
 
+    }
+    QTimer::singleShot(6000, this, SLOT(removeSuper()));
+}
+
+void player::removeSuper(){
+    super = false;
+    QList<QGraphicsItem*> items = scene()->items();
+    for(int i = 0; i < items.size(); i++){
+        if(typeid (*items[i]) == typeid (ghost)){
+            ghost* ghost1 = dynamic_cast<ghost*>(items[i]);
+            ghost1->removeFear();
+        }
+
+    }
+}
+bool player::isSuper(){
+    if(super)
+        return true;
+    else
+        return false;
 }
 
 void player::updateScore(QGraphicsTextItem* score_label){
-    //this->score_label = score_label;
     score_label->setPlainText(QString::number(score));
     score_label->update();
 }
@@ -147,7 +179,6 @@ void player::setScoreLabel(QGraphicsTextItem* score_label){
 }
 void player::removeLive(int index){
     scene()->removeItem(&livesObj[index]);
-    //scene()->removeItem(&lives[index]);
 }
 void player::setLivesObj(){
     livesImage.load("D:/QT/pacman1/Assets/Sprite1/sprite_front.png");
